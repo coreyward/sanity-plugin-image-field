@@ -129,6 +129,18 @@ describe("defineImageField", () => {
     ).not.toThrow()
   })
 
+  it("throws when constraints are nested under options.imageField", () => {
+    expect(() =>
+      defineImageField({
+        name: "hero",
+        options: {
+          // @ts-expect-error imageField is rejected here; constraints go at the top level
+          imageField: { aspectRatio: 16 / 9 },
+        },
+      })
+    ).toThrow("defineImageField does not read options.imageField")
+  })
+
   describe("validation", () => {
     it("derives one rule per constraint", () => {
       const field = defineImageField({

@@ -1,4 +1,9 @@
-import { defineField, type ImageDefinition, type ImageValue } from "sanity"
+import {
+  defineField,
+  type ImageDefinition,
+  type ImageOptions,
+  type ImageValue,
+} from "sanity"
 import { ImageFieldInput } from "./ImageFieldInput"
 import {
   describeAspectRatio,
@@ -17,15 +22,24 @@ import {
 /**
  * Parameters for {@link defineImageField}. It is an image field definition
  * without `type` and `components`, which {@link defineImageField} sets. The
- * {@link ImageFieldOptions} constraints are added as top-level props. A
- * `validation` builder is optional. When given, it is merged with the rules
- * derived from the constraints, not replaced by them.
+ * {@link ImageFieldOptions} constraints are added as top-level props. They are
+ * not accepted under `options.imageField`; that key is reserved for the output
+ * {@link defineImageField} writes. A `validation` builder is optional. When
+ * given, it is merged with the rules derived from the constraints, not replaced
+ * by them.
  */
 export type DefineImageFieldParams = Omit<
   ImageDefinition,
-  "type" | "components"
+  "type" | "components" | "options"
 > &
-  ImageFieldOptions
+  ImageFieldOptions & {
+    /**
+     * Native Sanity image options such as `hotspot`, `accept`, and `sources`.
+     * The image-field constraints go in the top-level props, so `imageField` is
+     * omitted here.
+     */
+    options?: Omit<ImageOptions, "imageField">
+  }
 
 /**
  * Builder for an image field that uses {@link ImageFieldInput}. It sets
@@ -63,6 +77,12 @@ export const defineImageField = ({
   validation,
   ...overrides
 }: DefineImageFieldParams) => {
+  if (options && "imageField" in options) {
+    throw new Error(
+      "defineImageField does not read options.imageField. Pass aspectRatio, recommendedDimensions, and requiredDimensions as top-level props instead."
+    )
+  }
+
   if (aspectRatio !== undefined) {
     validateAspectRatio(aspectRatio)
   }
