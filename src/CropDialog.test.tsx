@@ -261,4 +261,155 @@ describe("CropDialog", () => {
       ).not.toBeInTheDocument()
     })
   })
+
+  describe("aspect ratio", () => {
+    // A fixed 16:9 field with no snap ratios. A loaded crop is used as-is, so an
+    // off-ratio stored crop opens off-ratio.
+    const fixedRatio: ResolvedImageFieldConfig = {
+      aspectRatioRange: { min: 16 / 9, max: 16 / 9 },
+    }
+
+    it("disables confirm when the stored crop is off the fixed ratio", () => {
+      // The full image with no insets is 1200 × 800, ratio 1.5, which is off
+      // 16:9 (≈1.778).
+      const offRatioCrop: ImageCrop = {
+        _type: "sanity.imageCrop",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }
+
+      renderWithUi(
+        <CropDialog
+          assetRef={assetRef}
+          imageSource={imageSource}
+          sourceDimensions={source}
+          config={fixedRatio}
+          initialCrop={offRatioCrop}
+          onConfirm={() => {}}
+          onClose={() => {}}
+        />
+      )
+
+      expect(
+        screen.getByRole("button", { name: "Confirm crop" })
+      ).toBeDisabled()
+    })
+
+    it("enables confirm when the stored crop already matches the ratio", () => {
+      // 1200 × 675 is exactly 16:9 on this source. The vertical insets are
+      // (800 - 675) / 2 / 800 = 0.078125 each.
+      const onRatioCrop: ImageCrop = {
+        _type: "sanity.imageCrop",
+        top: 0.078125,
+        bottom: 0.078125,
+        left: 0,
+        right: 0,
+      }
+
+      renderWithUi(
+        <CropDialog
+          assetRef={assetRef}
+          imageSource={imageSource}
+          sourceDimensions={source}
+          config={fixedRatio}
+          initialCrop={onRatioCrop}
+          onConfirm={() => {}}
+          onClose={() => {}}
+        />
+      )
+
+      expect(screen.getByRole("button", { name: "Confirm crop" })).toBeEnabled()
+    })
+
+    it("enables confirm for a crop inside the allowed range", () => {
+      // A 4:3–16:9 range. The full image is 1200 × 800, ratio 1.5, inside it.
+      const rangeConfig: ResolvedImageFieldConfig = {
+        aspectRatioRange: { min: 4 / 3, max: 16 / 9 },
+      }
+      const inRangeCrop: ImageCrop = {
+        _type: "sanity.imageCrop",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }
+
+      renderWithUi(
+        <CropDialog
+          assetRef={assetRef}
+          imageSource={imageSource}
+          sourceDimensions={source}
+          config={rangeConfig}
+          initialCrop={inRangeCrop}
+          onConfirm={() => {}}
+          onClose={() => {}}
+        />
+      )
+
+      expect(screen.getByRole("button", { name: "Confirm crop" })).toBeEnabled()
+    })
+
+    it("disables confirm for a crop outside the allowed range", () => {
+      // A 4:3–16:9 range. An 800 × 800 square crop is ratio 1.0, below the 4:3
+      // minimum.
+      const rangeConfig: ResolvedImageFieldConfig = {
+        aspectRatioRange: { min: 4 / 3, max: 16 / 9 },
+      }
+      const squareCrop: ImageCrop = {
+        _type: "sanity.imageCrop",
+        top: 0,
+        bottom: 0,
+        left: 200 / 1200,
+        right: 200 / 1200,
+      }
+
+      renderWithUi(
+        <CropDialog
+          assetRef={assetRef}
+          imageSource={imageSource}
+          sourceDimensions={source}
+          config={rangeConfig}
+          initialCrop={squareCrop}
+          onConfirm={() => {}}
+          onClose={() => {}}
+        />
+      )
+
+      expect(
+        screen.getByRole("button", { name: "Confirm crop" })
+      ).toBeDisabled()
+    })
+
+    it("enables confirm for a snap field because the crop snaps on open", () => {
+      // A snap set of 1:1 and 16:9. An off-ratio stored crop is snapped to the
+      // nearest member when the dialog opens, so confirm is enabled immediately.
+      const snapConfig: ResolvedImageFieldConfig = {
+        aspectRatioRange: { min: 1, max: 16 / 9 },
+        snapRatios: [1, 16 / 9],
+      }
+      const offRatioCrop: ImageCrop = {
+        _type: "sanity.imageCrop",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }
+
+      renderWithUi(
+        <CropDialog
+          assetRef={assetRef}
+          imageSource={imageSource}
+          sourceDimensions={source}
+          config={snapConfig}
+          initialCrop={offRatioCrop}
+          onConfirm={() => {}}
+          onClose={() => {}}
+        />
+      )
+
+      expect(screen.getByRole("button", { name: "Confirm crop" })).toBeEnabled()
+    })
+  })
 })

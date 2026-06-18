@@ -36,7 +36,8 @@ export type ImageFieldOptions = {
   /**
    * The crop aspect ratio(s) the editor may pick: a single fixed `number`, an
    * {@link AspectRatioRange}, or an array of ratios the crop snaps to. Omit to
-   * allow any ratio.
+   * allow any ratio. Fields built with {@link defineImageField} also enforce it
+   * at the document level.
    */
   aspectRatio?: AspectRatio
   /**

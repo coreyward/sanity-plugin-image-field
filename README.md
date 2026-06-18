@@ -147,7 +147,8 @@ defineField({
 
 - Uses the **per-field** approach to specify `ImageFieldInput`
 - Adds your constraints to `options.imageField` automatically
-- Builds document-level validation from your dimension requirements
+- Builds document-level validation from your dimension requirements and
+  configured aspect ratio
 - Merges any additional validation you provide
 
 It's compatible with both per-field specification and studio-wide defaults.
@@ -181,24 +182,42 @@ It's compatible with both per-field specification and studio-wide defaults.
 
 All configuration lives under `options.imageField` in your field definition:
 
-| Option                  | Type                                 | Description                                                                                                                                                             |
-| ----------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `aspectRatio`           | `number \| { min; max } \| number[]` | Allowed crop ratios as `width / height`. Use a single number for a fixed ratio, a `{ min, max }` range for flexibility, or an array of specific ratios to snap between. |
-| `recommendedDimensions` | `{ width; height }`                  | Shows a non-blocking warning when the crop is smaller than this size. Helps editors maintain quality standards.                                                         |
-| `requiredDimensions`    | `{ width; height }`                  | Blocks confirmation when the crop is smaller than this size. With `defineImageField`, also adds document-level validation.                                              |
+````ts
+type ImageFieldOptions = {
+  /**
+   * Allowed crop ratios as width / height.
+   *
+   * - Single number: fixed ratio
+   * - { min, max }: flexible range
+   * - number[]: specific ratios to snap between
+   *
+   * @example
+   * ```ts
+   * // Fixed ratio (e.g., for hero images that must be exactly 16:9)
+   * aspectRatio: 16 / 9
+   *
+   * // Flexible range (e.g., for cards that can be 4:3 to 16:9)
+   * aspectRatio: { min: 4 / 3, max: 16 / 9 }
+   *
+   * // Specific ratios to snap between
+   * aspectRatio: [1 / 1, 4 / 3, 16 / 9]
+   * ```
+   */
+  aspectRatio?: number | { min: number; max: number } | number[]
 
-### Aspect ratio examples
+  /**
+   * Shows a non-blocking warning when the crop is smaller than this size.
+   * Helps editors maintain quality standards.
+   */
+  recommendedDimensions?: { width: number; height: number }
 
-```ts
-// Fixed ratio (e.g., for hero images that must be exactly 16:9)
-aspectRatio: 16 / 9
-
-// Flexible range (e.g., for cards that can be 4:3 to 16:9)
-aspectRatio: { min: 4 / 3, max: 16 / 9 }
-
-// Discrete options (e.g., for social media images that must be specific ratios)
-aspectRatio: [16 / 9, 4 / 3, 1]  // Snaps to nearest ratio as you drag
-```
+  /**
+   * Blocks confirmation when the crop is smaller than this size.
+   * With `defineImageField`, also adds document-level validation.
+   */
+  requiredDimensions?: { width: number; height: number }
+}
+````
 
 ## Usage patterns
 

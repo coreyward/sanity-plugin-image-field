@@ -4,6 +4,7 @@ import {
   type AspectRatio,
   type AspectRatioRange,
   type Dimensions,
+  type ResolvedImageFieldConfig,
 } from "./types"
 
 /**
@@ -403,4 +404,56 @@ export const formatAspectRatio = (ratio: number): string => {
     }
   }
   return `${ratio.toFixed(2)}:1`
+}
+
+/**
+ * Build a human-readable aspect-ratio label from a resolved config. A snap set
+ * of three or fewer ratios lists them all, and a larger set shows its extremes
+ * and a count. A continuous field shows a single ratio when min equals max,
+ * otherwise a range.
+ */
+export const describeAspectRatio = ({
+  aspectRatioRange,
+  snapRatios,
+}: Pick<
+  ResolvedImageFieldConfig,
+  "aspectRatioRange" | "snapRatios"
+>): string => {
+  if (snapRatios) {
+    if (snapRatios.length <= 3) {
+      return snapRatios.map(formatAspectRatio).join(", ")
+    }
+    const lo = formatAspectRatio(Math.min(...snapRatios))
+    const hi = formatAspectRatio(Math.max(...snapRatios))
+    return `${snapRatios.length} ratios (${lo} – ${hi})`
+  }
+  return aspectRatioRange.min === aspectRatioRange.max
+    ? formatAspectRatio(aspectRatioRange.min)
+    : `${formatAspectRatio(aspectRatioRange.min)} – ${formatAspectRatio(
+        aspectRatioRange.max
+      )}`
+}
+
+/**
+ * The relative tolerance for treating a crop's ratio as matching the
+ * constraint. It absorbs sub-pixel rounding in stored crops while still
+ * rejecting a genuinely different ratio.
+ */
+const RATIO_MATCH_TOLERANCE = 0.01
+
+/**
+ * Whether a crop's aspect `ratio` satisfies the field's constraint, within a
+ * small relative tolerance. A snap set matches its nearest member; a range
+ * (including a fixed ratio, where min equals max) matches when the ratio is
+ * inside the range.
+ */
+export const ratioMatchesConstraint = (
+  ratio: number,
+  config: Pick<ResolvedImageFieldConfig, "aspectRatioRange" | "snapRatios">,
+  tolerance = RATIO_MATCH_TOLERANCE
+): boolean => {
+  const target = config.snapRatios
+    ? nearestRatio(ratio, config.snapRatios)
+    : clampRatio(ratio, config.aspectRatioRange)
+  return Math.abs(ratio - target) <= target * tolerance
 }

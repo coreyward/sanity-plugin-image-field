@@ -1,9 +1,18 @@
 import { defineField, type ImageDefinition, type ImageValue } from "sanity"
 import { ImageFieldInput } from "./ImageFieldInput"
-import { dimensionsAtLeast } from "./cropMath"
+import {
+  describeAspectRatio,
+  dimensionsAtLeast,
+  ratioMatchesConstraint,
+  resolveAspectRatio,
+} from "./cropMath"
 import { validateAspectRatio } from "./utils"
 import { croppedDimensionsFromValue } from "./imageUrl"
-import { type Dimensions, type ImageFieldOptions } from "./types"
+import {
+  type Dimensions,
+  type ImageFieldOptions,
+  type ResolvedImageFieldConfig,
+} from "./types"
 
 /**
  * Parameters for {@link defineImageField}. It is an image field definition
@@ -21,10 +30,10 @@ export type DefineImageFieldParams = Omit<
 /**
  * Builder for an image field that uses {@link ImageFieldInput}. It sets
  * `components.input` and writes the constraints to `options.imageField`. It also
- * builds document-level `validation` from `requiredDimensions` and
- * `recommendedDimensions`. {@link ImageFieldInput} on its own does not build
- * that validation. A supplied `validation` is merged with those derived rules,
- * not replaced.
+ * builds document-level `validation` from `requiredDimensions`,
+ * `recommendedDimensions`, and `aspectRatio`. {@link ImageFieldInput} on its own
+ * does not build that validation. A supplied `validation` is merged with those
+ * derived rules, not replaced.
  *
  * The result goes in a `fields: [...]` array.
  *
@@ -90,6 +99,15 @@ export const defineImageField = ({
         )
       }
 
+      if (aspectRatio !== undefined) {
+        const config = resolveAspectRatio(aspectRatio)
+        rules.push(
+          rule.custom((value: ImageValue | undefined) =>
+            validateCropAspectRatio(value, config)
+          )
+        )
+      }
+
       if (validation) {
         const userRules = validation(rule, context)
         rules.push(...(Array.isArray(userRules) ? userRules : [userRules]))
@@ -116,4 +134,24 @@ const validateCroppedSize = (
   const verb = level === "warning" ? "should" : "must"
   const suffix = level === "warning" ? " for best results" : ""
   return `Cropped image ${verb} be at least ${threshold.width} × ${threshold.height} px${suffix}`
+}
+
+/**
+ * Check the cropped image ratio against the field's aspect-ratio constraint.
+ * Returns true when there is no asset or when the asset dimensions are unknown.
+ * An uncropped value is checked against its source ratio, which nudges the
+ * editor to crop when the source is off the constraint.
+ */
+const validateCropAspectRatio = (
+  value: ImageValue | undefined,
+  config: ResolvedImageFieldConfig
+): true | string => {
+  const dimensions = croppedDimensionsFromValue(value)
+  if (!dimensions) {
+    return true
+  }
+  if (ratioMatchesConstraint(dimensions.width / dimensions.height, config)) {
+    return true
+  }
+  return `Cropped image must use a ${describeAspectRatio(config)} aspect ratio`
 }

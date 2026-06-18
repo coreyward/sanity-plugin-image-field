@@ -12,12 +12,13 @@ import {
   croppedDimensions,
   cropToPixelRect,
   defaultCrop,
+  describeAspectRatio,
   dimensionsAtLeast,
   focalPointToHotspot,
-  formatAspectRatio,
   hotspotToFocalPoint,
   type PixelRect,
   pixelRectToCrop,
+  ratioMatchesConstraint,
 } from "./cropMath"
 import { nearestRatio } from "./utils"
 import { CropArea } from "./CropArea"
@@ -106,6 +107,10 @@ export const CropDialog = ({
   const belowRecommended =
     recommendedDimensions &&
     !dimensionsAtLeast(dimensions, recommendedDimensions)
+  const ratioMismatch = !ratioMatchesConstraint(
+    rect.width / rect.height,
+    config
+  )
 
   return (
     <Dialog
@@ -131,7 +136,7 @@ export const CropDialog = ({
             <Button
               tone="primary"
               text="Confirm crop"
-              disabled={belowRequired}
+              disabled={belowRequired || ratioMismatch}
               onClick={() => {
                 onConfirm({
                   crop: pixelRectToCrop(rect, sourceDimensions),
@@ -178,9 +183,11 @@ export const CropDialog = ({
           </Text>
         )}
 
-        <DimensionStatusMessage
+        <CropStatusMessage
+          config={config}
           requiredDimensions={requiredDimensions}
           recommendedDimensions={recommendedDimensions}
+          ratioMismatch={ratioMismatch}
           belowRequired={belowRequired}
           belowRecommended={belowRecommended}
         />
@@ -211,22 +218,37 @@ const StatusMessage = ({
 )
 
 /**
- * The size status shown beneath the crop. Renders a message when the field
- * sets a required or recommended size: a warning when the crop is too small,
- * or a confirmation when it meets both limits. Renders nothing when no size
- * limits are set. Required limits take priority over recommended ones.
+ * The status shown beneath the crop. A ratio mismatch takes priority and
+ * renders a critical message regardless of the size limits, so a wrong ratio
+ * never sits next to a positive size message. Otherwise it covers the size: a
+ * warning when the crop is too small, or a confirmation when it meets both
+ * limits. Renders nothing when the ratio matches and no size limits are set.
+ * Required limits take priority over recommended ones.
  */
-const DimensionStatusMessage = ({
+const CropStatusMessage = ({
+  config,
   requiredDimensions,
   recommendedDimensions,
+  ratioMismatch,
   belowRequired,
   belowRecommended,
 }: {
+  config: ResolvedImageFieldConfig
   requiredDimensions?: Dimensions
   recommendedDimensions?: Dimensions
+  ratioMismatch?: boolean
   belowRequired?: boolean
   belowRecommended?: boolean
 }) => {
+  if (ratioMismatch) {
+    return (
+      <StatusMessage
+        tone="critical"
+        icon={<ErrorOutlineIcon />}
+        message={`Adjust the crop to a ${describeAspectRatio(config)} aspect ratio.`}
+      />
+    )
+  }
   if (requiredDimensions && belowRequired) {
     return (
       <StatusMessage
@@ -262,27 +284,3 @@ const DimensionStatusMessage = ({
 
 const describeDimensions = (dimensions: Dimensions) =>
   `${dimensions.width} × ${dimensions.height} px`
-
-/**
- * Build the "Allowed aspect ratio" label. A snap set of three or fewer ratios
- * lists them all, and a larger set shows its extremes and a count. A continuous
- * field shows a single ratio when min equals max, otherwise a range.
- */
-const describeAspectRatio = ({
-  aspectRatioRange,
-  snapRatios,
-}: ResolvedImageFieldConfig): string => {
-  if (snapRatios) {
-    if (snapRatios.length <= 3) {
-      return snapRatios.map(formatAspectRatio).join(", ")
-    }
-    const lo = formatAspectRatio(Math.min(...snapRatios))
-    const hi = formatAspectRatio(Math.max(...snapRatios))
-    return `${snapRatios.length} ratios (${lo} – ${hi})`
-  }
-  return aspectRatioRange.min === aspectRatioRange.max
-    ? formatAspectRatio(aspectRatioRange.min)
-    : `${formatAspectRatio(aspectRatioRange.min)} – ${formatAspectRatio(
-        aspectRatioRange.max
-      )}`
-}

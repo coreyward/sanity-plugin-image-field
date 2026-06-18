@@ -100,6 +100,8 @@ const imageValue = (ref: string): ImageValue => ({
 
 const RASTER_REF = "image-a1b2c3d4e5f6-1200x800-jpg"
 const SMALL_RASTER_REF = "image-a1b2c3d4e5f6-100x100-jpg"
+const WIDE_RASTER_REF = "image-a1b2c3d4e5f6-1600x900-jpg"
+const NEAR_16_9_REF = "image-a1b2c3d4e5f6-1600x896-jpg"
 const SVG_REF = "image-a1b2c3d4e5f6-svg"
 
 describe("defineImageField", () => {
@@ -252,6 +254,85 @@ describe("defineImageField", () => {
       expect(recommended(imageValue(SMALL_RASTER_REF))).toBe(
         "Cropped image should be at least 1600 × 900 px for best results"
       )
+    })
+  })
+
+  describe("aspect-ratio validator", () => {
+    it("registers exactly one custom validator for a fixed aspect ratio", () => {
+      const validators = captureValidators({
+        name: "hero",
+        aspectRatio: 16 / 9,
+      })
+      expect(validators).toHaveLength(1)
+    })
+
+    it("rejects a value whose ratio is off the configured aspect ratio", () => {
+      const validate = validatorAt({ name: "hero", aspectRatio: 16 / 9 }, 0)
+      // RASTER_REF is 1200 × 800, ratio 1.5, off 16:9.
+      const result = validate(imageValue(RASTER_REF))
+      expect(typeof result).toBe("string")
+      expect(result).toContain("16:9")
+    })
+
+    it("accepts a value whose ratio matches the configured aspect ratio", () => {
+      const validate = validatorAt({ name: "hero", aspectRatio: 16 / 9 }, 0)
+      // WIDE_RASTER_REF is 1600 × 900, natively 16:9, with no crop.
+      expect(validate(imageValue(WIDE_RASTER_REF))).toBe(true)
+    })
+
+    it("passes an SVG asset because it has no parsed dimensions", () => {
+      const validate = validatorAt({ name: "hero", aspectRatio: 16 / 9 }, 0)
+      expect(validate(imageValue(SVG_REF))).toBe(true)
+    })
+
+    it("passes a value with no asset", () => {
+      const validate = validatorAt({ name: "hero", aspectRatio: 16 / 9 }, 0)
+      const noAsset = { _type: "image" } as ImageValue
+      expect(validate(noAsset)).toBe(true)
+    })
+
+    it("passes an undefined value", () => {
+      const validate = validatorAt({ name: "hero", aspectRatio: 16 / 9 }, 0)
+      expect(validate(undefined)).toBe(true)
+    })
+
+    it("accepts a ratio within tolerance of the target", () => {
+      const validate = validatorAt({ name: "hero", aspectRatio: 16 / 9 }, 0)
+      // NEAR_16_9_REF is 1600 × 896, ratio ≈1.786, about 0.4% off exact 16:9.
+      // It is inside the rounding tolerance, so a stored crop this close passes.
+      expect(validate(imageValue(NEAR_16_9_REF))).toBe(true)
+    })
+
+    it("accepts a ratio inside a range and rejects one outside it", () => {
+      const validate = validatorAt(
+        { name: "hero", aspectRatio: { min: 4 / 3, max: 16 / 9 } },
+        0
+      )
+      // RASTER_REF is 1200 × 800, ratio 1.5, inside the 4:3–16:9 range.
+      expect(validate(imageValue(RASTER_REF))).toBe(true)
+      // SMALL_RASTER_REF is 100 × 100, ratio 1.0, below the 4:3 minimum.
+      expect(typeof validate(imageValue(SMALL_RASTER_REF))).toBe("string")
+    })
+
+    it("accepts a snap-set member and rejects a ratio between members", () => {
+      const validate = validatorAt(
+        { name: "hero", aspectRatio: [1, 16 / 9] },
+        0
+      )
+      // SMALL_RASTER_REF is 1:1 and WIDE_RASTER_REF is 16:9, both exact members.
+      expect(validate(imageValue(SMALL_RASTER_REF))).toBe(true)
+      expect(validate(imageValue(WIDE_RASTER_REF))).toBe(true)
+      // RASTER_REF is 1.5, between the two members and near neither.
+      expect(typeof validate(imageValue(RASTER_REF))).toBe("string")
+    })
+
+    it("registers no aspect-ratio validator when no aspect ratio is set", () => {
+      const field = defineImageField({
+        name: "hero",
+        requiredDimensions: { width: 800, height: 450 },
+      })
+      // Only the required-dimension rule, with no aspect-ratio rule added.
+      expect(runValidation(field)).toHaveLength(1)
     })
   })
 })
