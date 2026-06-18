@@ -1,0 +1,24 @@
+{
+  "name": "playground",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "sanity dev",
+    "start": "sanity start",
+    "build": "sanity build"
+  },
+  "dependencies": {
+    "@sanity/ui": "^3.2.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "sanity": "^6.0.0",
+    "sanity-plugin-image-field": "workspace:*",
+    "styled-components": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.2",
+    "@types/react": "^19.2.17",
+    "typescript": "~6.0.3"
+  }
+}
