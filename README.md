@@ -1,8 +1,13 @@
 # sanity-plugin-image-field
 
 A custom image input for the Sanity Studio that gives you control over image
-cropping and dimensions. Unlike Sanity’s built-in image field, this plugin lets
-you:
+cropping and dimensions.
+
+[![npm version](https://badge.fury.io/js/sanity-plugin-image-field.svg)](https://www.npmjs.com/package/sanity-plugin-image-field)
+[![npm downloads](https://img.shields.io/npm/dm/sanity-plugin-image-field)](https://www.npmjs.com/package/sanity-plugin-image-field)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+[![Node Version](https://img.shields.io/node/v/sanity-plugin-image-field)](https://nodejs.org)
 
 - **Constrain aspect ratios** — Force crops into specific ratios (like 16:9 for
   hero images) or ranges (like 4:3 to 16:9 for flexible layouts)

@@ -2,6 +2,11 @@
   "name": "sanity-plugin-image-field",
   "version": "0.0.4",
   "description": "A Sanity Studio image input with configurable aspect ratios and enforced minimum cropped dimensions.",
+  "author": "Corey Ward <corey@hey.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coreyward/sanity-plugin-image-field"
+  },
   "keywords": [
     "sanity",
     "sanity-plugin",
