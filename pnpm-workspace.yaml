@@ -1,5 +1,6 @@
 packages:
   - playground
+
 allowBuilds:
   esbuild: true
 
@@ -14,8 +15,11 @@ blockExoticSubdeps: true
 minimumReleaseAge: 300 # 5 hours
 
 overrides:
-  brace-expansion@>=2.0.0 <2.0.3: '^2.0.3'
-  esbuild@>=0.17.0 <0.28.1: '^0.28.1'
-  js-yaml@<=4.2.0: '^4.2.0'
-  picomatch@>=4.0.0 <4.0.4: '^4.0.4'
-  uuid@<11.1.1: '^11.1.1'
+  brace-expansion@>=2.0.0 <2.0.3: "^2.0.3"
+  dompurify@<3.4.11: "^3.4.11"
+  esbuild@>=0.17.0 <0.28.1: "^0.28.1"
+  js-yaml@<=4.2.0: "^4.2.0"
+  picomatch@>=4.0.0 <4.0.4: "^4.0.4"
+  undici@<6.27.0: "^6.27.0"
+  undici@>=7.23.0 <7.28.0: "^7.28.0"
+  uuid@<11.1.1: "^11.1.1"
