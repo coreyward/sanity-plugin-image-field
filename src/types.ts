@@ -27,12 +27,44 @@ export type Dimensions = {
 }
 
 /**
+ * A canonical image file format the field handles, as a lowercase extension
+ * without a leading dot.
+ */
+export type ImageFormat =
+  | "avif"
+  | "gif"
+  | "jpg"
+  | "png"
+  | "svg"
+  | "tiff"
+  | "webp"
+
+/**
+ * An alias an author may write in place of a canonical {@link ImageFormat}.
+ * `jpeg` resolves to `jpg`, and `tif` resolves to `tiff`.
+ */
+export type ImageFormatAlias = "jpeg" | "tif"
+
+/**
+ * A format an author may list in `allowedFormats`: either a canonical
+ * {@link ImageFormat} or an {@link ImageFormatAlias}.
+ */
+export type AllowedImageFormat = ImageFormat | ImageFormatAlias
+
+/**
  * Per-field settings for {@link ImageFieldInput}, set under `options.imageField`
  * on any Sanity `image` field. The component reads them at runtime. Every
  * property is optional. With none set, the field is a plain uploader with a
  * free-form cropper.
  */
 export type ImageFieldOptions = {
+  /**
+   * Image file formats the editor may upload or select, for example
+   * `["jpg", "png", "webp"]`. Each entry must be a canonical
+   * {@link ImageFormat} or the `jpeg` alias. Fields built with
+   * {@link defineImageField} also enforce this at the document level.
+   */
+  allowedFormats?: AllowedImageFormat[]
   /**
    * The crop aspect ratio(s) the editor may pick: a single fixed `number`, an
    * {@link AspectRatioRange}, or an array of ratios the crop snaps to. Omit to

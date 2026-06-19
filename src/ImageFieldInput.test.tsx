@@ -127,6 +127,24 @@ describe("ImageFieldInput paste-to-upload", () => {
     expect(uploadCalls).toHaveLength(0)
   })
 
+  it("ignores a pasted image whose type allowedFormats excludes", () => {
+    renderWithUi(
+      <ImageFieldInput
+        {...baseProps({
+          schemaType: {
+            name: "image",
+            options: { imageField: { allowedFormats: ["jpg", "png"] } },
+          },
+        })}
+      />
+    )
+
+    const file = new File(["data"], "pic.gif", { type: "image/gif" })
+    pasteFiles(screen.getByRole("button", { name: "Upload" }), [file])
+
+    expect(uploadCalls).toHaveLength(0)
+  })
+
   it("picks the accepted image when the clipboard also holds other files", () => {
     renderWithUi(
       <ImageFieldInput
@@ -559,10 +577,47 @@ describe("ImageFieldInput dimension messaging in the confirmed preview", () => {
 })
 
 describe("ImageFieldInput upload errors", () => {
+  it("derives the file picker accept value from allowed formats", () => {
+    renderWithUi(
+      <ImageFieldInput
+        {...baseProps({
+          schemaType: {
+            name: "image",
+            options: { imageField: { allowedFormats: ["jpeg", "png"] } },
+          },
+        })}
+      />
+    )
+
+    expect(screen.getByLabelText("Upload image")).toHaveAttribute(
+      "accept",
+      "image/jpeg,.jpg,.jpeg,image/png"
+    )
+  })
+
   it("rejects a picked file whose type is not accepted and uploads nothing", () => {
     renderWithUi(<ImageFieldInput {...baseProps()} />)
 
     const file = new File(["data"], "doc.pdf", { type: "application/pdf" })
+    pickFile(file)
+
+    expect(uploadCalls).toHaveLength(0)
+    expect(screen.getByText(/isn't accepted/i)).toBeInTheDocument()
+  })
+
+  it("rejects a picked file whose type allowedFormats excludes", () => {
+    renderWithUi(
+      <ImageFieldInput
+        {...baseProps({
+          schemaType: {
+            name: "image",
+            options: { imageField: { allowedFormats: ["jpg", "png"] } },
+          },
+        })}
+      />
+    )
+
+    const file = new File(["data"], "pic.webp", { type: "image/webp" })
     pickFile(file)
 
     expect(uploadCalls).toHaveLength(0)
@@ -633,6 +688,36 @@ describe("ImageFieldInput select-existing affordance", () => {
     })
 
     expect(screen.getByText(/can't be used here/i)).toBeInTheDocument()
+  })
+
+  it("rejects an existing image whose format allowedFormats excludes", () => {
+    let captured: ((assets: unknown[]) => void) | null = null
+    const Source = (props: { onSelect: (assets: unknown[]) => void }) => {
+      captured = props.onSelect
+      return null
+    }
+    workspaceState.assetSources = [fakeSource({ component: Source })]
+    renderWithUi(
+      <ImageFieldInput
+        {...baseProps({
+          schemaType: {
+            name: "image",
+            options: { imageField: { allowedFormats: ["jpg", "png"] } },
+          },
+        })}
+      />
+    )
+
+    fireEvent.click(screen.getByRole("button", { name: "Select existing" }))
+
+    expect(captured).not.toBeNull()
+    act(() => {
+      captured?.([
+        { kind: "assetDocumentId", value: "image-a1b2c3d4e5f6-1200x800-gif" },
+      ])
+    })
+
+    expect(screen.getByText(/format isn't accepted/i)).toBeInTheDocument()
   })
 
   it("opens the crop editor for a valid image selected from a source", () => {

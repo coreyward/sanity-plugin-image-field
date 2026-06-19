@@ -14,8 +14,14 @@ import {
 import { validateAspectRatio } from "./utils"
 import { croppedDimensionsFromValue } from "./imageUrl"
 import {
+  assetRefMatchesAllowedFormats,
+  describeAllowedFormats,
+  normalizeAllowedFormats,
+} from "./upload"
+import {
   type Dimensions,
   type ImageFieldOptions,
+  type ImageFormat,
   type ResolvedImageFieldConfig,
 } from "./types"
 
@@ -70,6 +76,7 @@ export type DefineImageFieldParams = Omit<
  * ```
  */
 export const defineImageField = ({
+  allowedFormats,
   aspectRatio,
   recommendedDimensions,
   requiredDimensions,
@@ -79,8 +86,20 @@ export const defineImageField = ({
 }: DefineImageFieldParams) => {
   if (options && "imageField" in options) {
     throw new Error(
-      "defineImageField does not read options.imageField. Pass aspectRatio, recommendedDimensions, and requiredDimensions as top-level props instead."
+      "defineImageField does not read options.imageField. Pass allowedFormats, aspectRatio, recommendedDimensions, and requiredDimensions as top-level props instead."
     )
+  }
+
+  const normalizedAllowedFormats =
+    allowedFormats === undefined
+      ? undefined
+      : normalizeAllowedFormats(allowedFormats)
+
+  if (
+    normalizedAllowedFormats !== undefined &&
+    normalizedAllowedFormats.length === 0
+  ) {
+    throw new Error("allowedFormats must not be an empty array.")
   }
 
   if (aspectRatio !== undefined) {
@@ -88,6 +107,7 @@ export const defineImageField = ({
   }
 
   const imageField: ImageFieldOptions = {
+    allowedFormats: normalizedAllowedFormats,
     aspectRatio,
     recommendedDimensions,
     requiredDimensions,
@@ -100,6 +120,14 @@ export const defineImageField = ({
     components: { input: ImageFieldInput },
     validation: (rule, context) => {
       const rules: ReturnType<typeof rule.required>[] = []
+
+      if (normalizedAllowedFormats) {
+        rules.push(
+          rule.custom((value: ImageValue | undefined) =>
+            validateImageFormat(value, normalizedAllowedFormats)
+          )
+        )
+      }
 
       if (requiredDimensions) {
         rules.push(
@@ -135,6 +163,17 @@ export const defineImageField = ({
       return rules
     },
   })
+}
+
+const validateImageFormat = (
+  value: ImageValue | undefined,
+  allowedFormats: readonly ImageFormat[]
+): true | string => {
+  if (assetRefMatchesAllowedFormats(value?.asset?._ref, allowedFormats)) {
+    return true
+  }
+
+  return `Image must use ${describeAllowedFormats(allowedFormats)} format`
 }
 
 /**

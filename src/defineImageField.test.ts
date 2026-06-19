@@ -102,6 +102,8 @@ const RASTER_REF = "image-a1b2c3d4e5f6-1200x800-jpg"
 const SMALL_RASTER_REF = "image-a1b2c3d4e5f6-100x100-jpg"
 const WIDE_RASTER_REF = "image-a1b2c3d4e5f6-1600x900-jpg"
 const NEAR_16_9_REF = "image-a1b2c3d4e5f6-1600x896-jpg"
+const PNG_REF = "image-a1b2c3d4e5f6-1200x800-png"
+const GIF_REF = "image-a1b2c3d4e5f6-1200x800-gif"
 const SVG_REF = "image-a1b2c3d4e5f6-svg"
 
 describe("defineImageField", () => {
@@ -127,6 +129,28 @@ describe("defineImageField", () => {
     expect(() =>
       defineImageField({ name: "hero", aspectRatio: [16 / 9, 4 / 3, 1] })
     ).not.toThrow()
+  })
+
+  it("throws for an empty allowed formats array", () => {
+    expect(() =>
+      defineImageField({ name: "hero", allowedFormats: [] })
+    ).toThrow("allowedFormats must not be an empty array.")
+  })
+
+  it("writes normalized allowed formats into the image field options", () => {
+    const field = defineImageField({
+      name: "hero",
+      allowedFormats: ["jpeg", "jpg", "png"],
+    })
+
+    expect(field.options?.imageField?.allowedFormats).toEqual(["jpg", "png"])
+  })
+
+  it("throws for a format the field does not handle", () => {
+    expect(() =>
+      // @ts-expect-error -- "ico" is not an AllowedImageFormat
+      defineImageField({ name: "hero", allowedFormats: ["ico"] })
+    ).toThrow(/Unsupported image format "ico"/)
   })
 
   it("throws when constraints are nested under options.imageField", () => {
@@ -299,8 +323,7 @@ describe("defineImageField", () => {
 
     it("passes a value with no asset", () => {
       const validate = validatorAt({ name: "hero", aspectRatio: 16 / 9 }, 0)
-      const noAsset = { _type: "image" } as ImageValue
-      expect(validate(noAsset)).toBe(true)
+      expect(validate({ _type: "image" })).toBe(true)
     })
 
     it("passes an undefined value", () => {
@@ -345,6 +368,51 @@ describe("defineImageField", () => {
       })
       // Only the required-dimension rule, with no aspect-ratio rule added.
       expect(runValidation(field)).toHaveLength(1)
+    })
+  })
+
+  describe("format validator", () => {
+    it("registers exactly one custom validator for allowed formats", () => {
+      const validators = captureValidators({
+        name: "hero",
+        allowedFormats: ["jpg", "png"],
+      })
+      expect(validators).toHaveLength(1)
+    })
+
+    it("accepts values whose asset format is allowed", () => {
+      const validate = validatorAt(
+        { name: "hero", allowedFormats: ["jpg", "png"] },
+        0
+      )
+
+      expect(validate(imageValue(RASTER_REF))).toBe(true)
+      expect(validate(imageValue(PNG_REF))).toBe(true)
+    })
+
+    it("treats jpeg as an alias for Sanity jpg refs", () => {
+      const validate = validatorAt(
+        { name: "hero", allowedFormats: ["jpeg"] },
+        0
+      )
+
+      expect(validate(imageValue(RASTER_REF))).toBe(true)
+    })
+
+    it("rejects values whose asset format is not allowed", () => {
+      const validate = validatorAt(
+        { name: "hero", allowedFormats: ["jpg", "png", "webp"] },
+        0
+      )
+
+      expect(validate(imageValue(GIF_REF))).toBe(
+        "Image must use JPEG, JPG, PNG, or WEBP format"
+      )
+    })
+
+    it("passes a value with no asset", () => {
+      const validate = validatorAt({ name: "hero", allowedFormats: ["jpg"] }, 0)
+      expect(validate({ _type: "image" })).toBe(true)
     })
   })
 })

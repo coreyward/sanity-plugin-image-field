@@ -47,7 +47,13 @@ import {
   type SanityImageSource,
   sourceDimensions,
 } from "./imageUrl"
-import { acceptsType, isTextEntryTarget } from "./upload"
+import {
+  acceptFromAllowedFormats,
+  acceptsType,
+  assetRefMatchesAllowedFormats,
+  describeAllowedFormats,
+  isTextEntryTarget,
+} from "./upload"
 import { type Dimensions, type ResolvedImageFieldConfig } from "./types"
 
 const API_VERSION = "2025-02-19"
@@ -84,6 +90,7 @@ export const ImageFieldInput = ({
   const assetSources = useWorkspace().form.image.assetSources
 
   const imageFieldOptions = schemaType.options?.imageField
+  const allowedFormats = imageFieldOptions?.allowedFormats
   const aspectRatio = imageFieldOptions?.aspectRatio
   const hasAspectConstraint = aspectRatio !== undefined
   const hotspotEnabled = Boolean(schemaType.options?.hotspot)
@@ -94,7 +101,10 @@ export const ImageFieldInput = ({
     recommendedDimensions: imageFieldOptions?.recommendedDimensions,
     requiredDimensions: imageFieldOptions?.requiredDimensions,
   }
-  const accept = schemaType.options?.accept ?? "image/*"
+  const accept =
+    acceptFromAllowedFormats(allowedFormats) ??
+    schemaType.options?.accept ??
+    "image/*"
 
   const [upload, setUpload] = useState<UploadStatus>({ status: "idle" })
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -140,6 +150,14 @@ export const ImageFieldInput = ({
    * dialog, and non-editable raster images commit after the up-front size check.
    */
   const applyAsset = (selectedAssetRef: string) => {
+    if (!assetRefMatchesAllowedFormats(selectedAssetRef, allowedFormats)) {
+      setUpload({
+        status: "error",
+        message: `That image format isn't accepted here. Choose ${describeAllowedFormats(allowedFormats ?? [])}.`,
+      })
+      return
+    }
+
     if (isSvg(selectedAssetRef)) {
       commitAsset(selectedAssetRef, [unset(["crop"])])
       return

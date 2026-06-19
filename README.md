@@ -1,7 +1,7 @@
 # sanity-plugin-image-field
 
 A custom image input for the Sanity Studio that gives you control over image
-cropping and dimensions. Unlike Sanity's built-in image field, this plugin lets
+cropping and dimensions. Unlike Sanity’s built-in image field, this plugin lets
 you:
 
 - **Constrain aspect ratios** — Force crops into specific ratios (like 16:9 for
@@ -13,7 +13,7 @@ you:
 
 ## How it works
 
-This plugin integrates seamlessly with Sanity's existing image system:
+This plugin integrates seamlessly with Sanity’s existing image system:
 
 - It replaces the UI component in the Studio responsible for uploading images
   with a custom one that has cropping and validation built in
@@ -67,6 +67,8 @@ export const page = defineType({
       // Block crops smaller than this (and validate at document level)
       requiredDimensions: { width: 800, height: 450 },
       validation: (Rule) => Rule.required(),
+      // Restrict uploads and selected assets to these file formats
+      allowedFormats: ["jpg", "png", "webp"],
     }),
   ],
 })
@@ -75,7 +77,7 @@ export const page = defineType({
 ## Choosing an approach
 
 This plugin provides a React component (`ImageFieldInput`) that replaces
-Sanity's default image input. To use it, you need to:
+Sanity’s default image input. To use it, you need to:
 
 1. **Specify the component** — Tell Sanity when to use `ImageFieldInput` instead
    of the default
@@ -207,15 +209,18 @@ type ImageFieldOptions = {
 
   /**
    * Shows a non-blocking warning when the crop is smaller than this size.
-   * Helps editors maintain quality standards.
    */
   recommendedDimensions?: { width: number; height: number }
 
   /**
    * Blocks confirmation when the crop is smaller than this size.
-   * With `defineImageField`, also adds document-level validation.
    */
   requiredDimensions?: { width: number; height: number }
+
+  /**
+   * Allowed image file formats, as extensions (e.g., ["jpg", "png", "webp"]).
+   */
+  allowedFormats?: AllowedImageFormat[]
 }
 ````
 
@@ -239,6 +244,7 @@ export const page = defineType({
       aspectRatio: { min: 4 / 3, max: 16 / 9 },
       recommendedDimensions: { width: 1600, height: 900 },
       requiredDimensions: { width: 800, height: 450 },
+      allowedFormats: ["jpg", "png", "webp"],
       validation: (Rule) => Rule.required(),
     }),
   ],
@@ -248,8 +254,8 @@ export const page = defineType({
 **Benefits:**
 
 - Simplest API — all configuration in one place
-- Automatic document-level validation from dimension constraints
-- Type-safe and integrates with Sanity's field system
+- Automatic document-level validation from format and dimension constraints
+- Type-safe and integrates with Sanity’s field system
 
 ### 2. Manual field configuration
 
@@ -268,11 +274,12 @@ export const page = defineType({
       title: "Hero image",
       type: "image",
       options: {
-        hotspot: true, // Enable focal point editor (Sanity's standard option)
+        hotspot: true,
         imageField: {
           aspectRatio: { min: 4 / 3, max: 16 / 9 },
           recommendedDimensions: { width: 1600, height: 900 },
           requiredDimensions: { width: 800, height: 450 },
+          allowedFormats: ["jpg", "png", "webp"],
         },
       },
       components: { input: ImageFieldInput },
@@ -288,7 +295,7 @@ export const page = defineType({
 - Integrates with existing field configurations
 
 **Note:** This approach doesn't automatically add document-level validation for
-dimensions. Add it manually if needed, or use `defineImageField`.
+formats or dimensions. Add it manually if needed, or use `defineImageField`.
 
 ### 3. Form-level default
 
@@ -337,7 +344,9 @@ Content editors can upload images by:
 - Pasting an image from the clipboard
 - Selecting an existing asset from the Media library or other configured sources
 
-The field honors any `options.accept` format restrictions you set.
+The field honors `options.imageField.allowedFormats` for file picker uploads,
+drag-and-drop, paste, and selecting existing assets. If `allowedFormats` is not
+set, it falls back to Sanity’s `options.accept`, but in a more limited form.
 
 ### Cropping
 
@@ -357,7 +366,7 @@ automatically after upload. The editor:
 ### Focal point
 
 When you enable `options.hotspot: true`, editors can set a focal point for the
-image. This is stored in Sanity's standard `hotspot` field and works with
+image. This is stored in Sanity’s standard `hotspot` field and works with
 front-end tools that support cover-mode framing. The focal point marker is
 positioned relative to the crop area.
 
@@ -371,7 +380,7 @@ After cropping, editors see:
 
 ## How cropping works with Sanity
 
-This plugin uses Sanity's standard, non-destructive cropping system:
+This plugin uses Sanity’s standard, non-destructive cropping system:
 
 - **Storage format** — Crops are stored as `{ top, bottom, left, right }` insets
   (0-1 range) on the standard `crop` field
@@ -393,6 +402,7 @@ SVG images:
 - The crop dialog is not shown for SVG images
 - Aspect ratio and dimension validation are not performed on SVG images, even
   when the SVG has dimensions (from `viewBox` or `width`/`height` attributes)
+- Format validation still applies to SVG images when `allowedFormats` is set
 - The asset reference is still stored normally
 
 ## Playground

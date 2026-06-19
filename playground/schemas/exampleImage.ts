@@ -76,6 +76,13 @@ export const exampleImage = defineType({
       validation: (Rule) => Rule.required(),
     }),
 
+    defineImageField({
+      name: "jpegImage",
+      title: "JPEG image",
+      allowedFormats: ["jpeg"],
+      aspectRatio: 2 / 3,
+    }),
+
     // A default image: no wrapper, no options.
     defineField({
       name: "defaultConfigImage",
