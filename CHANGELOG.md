@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.3 - 2026-06-19
+
+- Added an `allowedFormats` option for restricting accepted image file types.
+- Applied format restrictions during image selection and upload validation.
+- Exposed the new option through `defineImageField` and package TypeScript types.
+- Updated README and playground schema examples to document `allowedFormats`.
+
 ## 0.0.2 - 2026-06-19
 
 - Added aspect ratio validation for image field configuration.
