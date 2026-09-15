@@ -2,6 +2,7 @@ packages:
   - playground
 
 allowBuilds:
+  '@swc/core': false
   esbuild: true
 
 # This ensures that all transitive dependencies are resolved from trusted
@@ -15,11 +16,23 @@ blockExoticSubdeps: true
 minimumReleaseAge: 300 # 5 hours
 
 overrides:
-  brace-expansion@>=2.0.0 <2.0.3: "^2.0.3"
-  dompurify@<3.4.11: "^3.4.11"
+  adm-zip@<0.6.1: "^0.6.1"
+  baseline-browser-mapping@>=2.0.0 <2.11.0: "^2.11.0"
+  brace-expansion@>=2.0.0 <2.1.4: "^2.1.4"
+  brace-expansion@>=3.0.0 <5.0.9: "^5.0.9"
+  browserslist@<4.28.7: "^4.28.7"
+  dompurify@<3.4.13: "^3.4.13"
   esbuild@>=0.17.0 <0.28.1: "^0.28.1"
-  js-yaml@<=4.2.0: "^4.2.0"
+  fflate@>=0.8.0 <0.8.3: "^0.8.3"
+  js-yaml@<3.15.2: "^3.15.2"
+  js-yaml@>=4.0.0 <4.3.2: "^4.3.2"
+  linkify-it@<5.0.2: "^5.0.2"
+  nanoid@<3.3.18: "^3.3.18"
+  nanoid@>=4.0.0 <5.1.16: "^5.1.16"
   picomatch@>=4.0.0 <4.0.4: "^4.0.4"
-  undici@<6.27.0: "^6.27.0"
-  undici@>=7.23.0 <7.28.0: "^7.28.0"
+  postcss@<8.5.23: "^8.5.23"
+  smol-toml@<1.7.1: "^1.7.1"
+  tar@<7.5.21: "^7.5.21"
+  undici@<6.28.0: "^6.28.0"
+  undici@>=7.0.0 <7.29.0: "^7.29.0"
   uuid@<11.1.1: "^11.1.1"

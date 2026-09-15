@@ -143,7 +143,7 @@ describe("defineImageField", () => {
       allowedFormats: ["jpeg", "jpg", "png"],
     })
 
-    expect(field.options?.imageField?.allowedFormats).toEqual(["jpg", "png"])
+    expect(field.options.imageField.allowedFormats).toEqual(["jpg", "png"])
   })
 
   it("throws for a format the field does not handle", () => {
