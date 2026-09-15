@@ -1,19 +1,13 @@
-import { defineConfig } from "tsup"
+import { defineConfig } from "tsdown"
 
 export default defineConfig({
   entry: ["src/index.ts"],
   format: ["esm", "cjs"],
   tsconfig: "tsconfig.lib.json",
-  dts: {
-    // tsup always injects `baseUrl: "."` for the dts pass, which TypeScript 6.0
-    // treats as a hard error unless deprecations are explicitly tolerated.
-    compilerOptions: {
-      ignoreDeprecations: "6.0",
-    },
-  },
+  dts: true,
+  fixedExtension: false,
   sourcemap: true,
   clean: true,
-  splitting: false,
   target: "es2022",
   external: [
     "react",

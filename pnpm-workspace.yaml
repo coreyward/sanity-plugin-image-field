@@ -2,7 +2,6 @@ packages:
   - playground
 
 allowBuilds:
-  '@swc/core': false
   esbuild: true
 
 # This ensures that all transitive dependencies are resolved from trusted

@@ -36,8 +36,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
+    "build": "tsdown",
+    "dev": "tsdown --watch",
     "typecheck": "tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -77,11 +77,11 @@
     "oxlint": "^1.69.0",
     "oxlint-tsgolint": "^0.23.0",
     "prettier": "^3.8.4",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "sanity": "^6.13.2",
     "styled-components": "^6.4.0",
-    "tsup": "^8.5.1",
+    "tsdown": "^0.23.0",
     "typescript": "~6.0.3",
     "vite": "^8.0.16",
     "vitest": "^5.0.0"
