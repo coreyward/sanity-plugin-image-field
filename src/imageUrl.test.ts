@@ -97,9 +97,7 @@ describe("isSvg", () => {
 describe("croppedDimensionsFromValue", () => {
   it("returns null for undefined or asset-less values", () => {
     expect(croppedDimensionsFromValue(undefined)).toBeNull()
-    expect(
-      croppedDimensionsFromValue({ _type: "image" } as ImageValue)
-    ).toBeNull()
+    expect(croppedDimensionsFromValue({ _type: "image" })).toBeNull()
   })
 
   it("returns null when the asset has no encoded dimensions", () => {
@@ -139,9 +137,7 @@ describe("sourceImageUrl", () => {
 
 describe("croppedImageUrl", () => {
   it("returns null when the value has no asset reference", () => {
-    expect(
-      croppedImageUrl({ _type: "image" } as ImageValue, SOURCE, 640)
-    ).toBeNull()
+    expect(croppedImageUrl({ _type: "image" }, SOURCE, 640)).toBeNull()
   })
 
   it("builds a width-fit URL for an uncropped image", () => {

@@ -382,12 +382,11 @@ describe("ImageFieldInput deferred commit", () => {
   })
 })
 
-const rasterValue = (extra: Record<string, unknown> = {}): ImageValue =>
-  ({
-    _type: "image",
-    asset: { _type: "reference", _ref: "image-a1b2c3d4e5f6-1200x800-jpg" },
-    ...extra,
-  }) as ImageValue
+const rasterValue = (extra: Record<string, unknown> = {}): ImageValue => ({
+  _type: "image",
+  asset: { _type: "reference", _ref: "image-a1b2c3d4e5f6-1200x800-jpg" },
+  ...extra,
+})
 
 type UnsetPatch = { type: string; path: unknown[] }
 

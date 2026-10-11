@@ -17,6 +17,7 @@ export default defineConfig({
   },
   rules: {
     curly: "error",
+    "no-irregular-whitespace": ["error", { skipComments: true }],
     "sort-imports": [
       "warn",
       {
