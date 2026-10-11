@@ -14,7 +14,7 @@
     "react-dom": "^19.3.0",
     "sanity": "^6.18.0",
     "sanity-plugin-image-field": "workspace:*",
-    "styled-components": "^6.4.0"
+    "styled-components": "^6.5.3"
   },
   "devDependencies": {
     "@types/node": "^24.13.2",
