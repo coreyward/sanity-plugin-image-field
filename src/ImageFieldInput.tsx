@@ -5,13 +5,11 @@ import {
   Card,
   Flex,
   Inline,
-  Menu,
-  MenuButton,
-  MenuItem,
   Spinner,
   Stack,
   Text,
 } from "@sanity/ui"
+import { Menu, MenuButton, MenuItem } from "@sanity/ui/menu"
 import {
   CropIcon,
   ImageIcon,

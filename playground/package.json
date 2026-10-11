@@ -9,10 +9,10 @@
     "build": "sanity build"
   },
   "dependencies": {
-    "@sanity/ui": "^3.2.0",
+    "@sanity/ui": "^4.4.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "sanity": "^6.1.0",
+    "sanity": "^6.18.0",
     "sanity-plugin-image-field": "workspace:*",
     "styled-components": "^6.4.0"
   },
