@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@sanity-image/url-builder": "^1.1.0",
-    "@sanity/icons": "^3.0.0"
+    "@sanity/icons": "^5.2.3"
   },
   "peerDependencies": {
     "@sanity/ui": "^4.0.0",

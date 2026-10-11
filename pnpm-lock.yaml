@@ -34,8 +34,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0
       '@sanity/icons':
-        specifier: ^3.0.0
-        version: 3.7.4(react@19.3.0)
+        specifier: ^5.2.3
+        version: 5.2.3(react@19.3.0)
     devDependencies:
       '@sanity/types':
         specifier: ^6.18.0
@@ -2292,12 +2292,6 @@ packages:
   '@sanity/groq-condition-describe@0.5.2':
     resolution: {integrity: sha512-HbP+UytB9gbScX5JuCM5mJNIZ093p3eeuDojqbf5KIunBaAqi0AuamsU5bjfNa/roE92xAJ9HDLbS5Vc93aPWA==}
     engines: {node: '>=20'}
-
-  '@sanity/icons@3.7.4':
-    resolution: {integrity: sha512-O9MnckiDsphFwlRS8Q3kj3n+JYUZ0UzKRujnSikMZOKI0dayucRe4U2XvxikRhJnFhcEJXW2RkWJoBaCoup9Sw==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      react: ^18.3 || ^19.0.0-0
 
   '@sanity/icons@5.2.3':
     resolution: {integrity: sha512-10nE7IiuXIPIf6ufSKyNwnOE75wghEollUYzkjPUAX+5oenyE5qDFUrMD5MeC+8gxZ8KS61o8sH1mpmhpWx++w==}
@@ -7996,10 +7990,6 @@ snapshots:
       groq-js: 1.30.2(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
-
-  '@sanity/icons@3.7.4(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
 
   '@sanity/icons@5.2.3(react@19.3.0)':
     dependencies:

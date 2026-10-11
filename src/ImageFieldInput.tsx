@@ -10,13 +10,11 @@ import {
   Text,
 } from "@sanity/ui"
 import { Menu, MenuButton, MenuItem } from "@sanity/ui/menu"
-import {
-  CropIcon,
-  ImageIcon,
-  ImagesIcon,
-  TrashIcon,
-  UploadIcon,
-} from "@sanity/icons"
+import { CropIcon } from "@sanity/icons/Crop"
+import { ImageIcon } from "@sanity/icons/Image"
+import { ImagesIcon } from "@sanity/icons/Images"
+import { TrashIcon } from "@sanity/icons/Trash"
+import { UploadIcon } from "@sanity/icons/Upload"
 import {
   type AssetFromSource,
   type AssetSource,

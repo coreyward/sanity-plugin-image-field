@@ -1,11 +1,9 @@
 import { useState } from "react"
 import { Box, Button, Card, Dialog, Flex, Stack, Text } from "@sanity/ui"
-import {
-  CheckmarkCircleIcon,
-  ErrorOutlineIcon,
-  ResetIcon,
-  WarningOutlineIcon,
-} from "@sanity/icons"
+import { CheckmarkCircleIcon } from "@sanity/icons/CheckmarkCircle"
+import { ErrorOutlineIcon } from "@sanity/icons/ErrorOutline"
+import { ResetIcon } from "@sanity/icons/Reset"
+import { WarningOutlineIcon } from "@sanity/icons/WarningOutline"
 import { type ImageCrop, type ImageHotspot } from "sanity"
 import {
   applyRatio,
