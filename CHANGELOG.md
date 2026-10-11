@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.1.0 - 2026-10-10
+
+- **Breaking:** the `@sanity/ui` peer dependency is now `^4.0.0`. Studios on
+  `@sanity/ui` 3 must upgrade it before installing this version.
+- Updated `@sanity/icons` to v5, the version `sanity` and `@sanity/ui` 4 use.
+  Studios no longer bundle a second copy of the icon set.
+- Updated `@sanity-image/url-builder` to `1.2.0`.
+- Replaced tsup with tsdown for builds. The published files and exports are
+  unchanged.
+- Added repository and author metadata to `package.json`, and npm badges to the
+  README.
+- Updated development dependencies, including React 19.3, Sanity 6.18, Vitest 5,
+  oxlint and Prettier. These do not affect the published package.
+
 ## 0.0.4 - 2026-06-19
 
 - Updated Sanity-related dependencies from `6.0.0` to `6.1.0`.
