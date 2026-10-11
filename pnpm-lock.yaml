@@ -80,8 +80,8 @@ importers:
         specifier: ^7.0.2004
         version: 7.0.2004
       prettier:
-        specifier: ^3.8.4
-        version: 3.8.4
+        specifier: ^3.9.10
+        version: 3.9.10
       react:
         specifier: ^19.3.0
         version: 19.3.0
@@ -3960,8 +3960,8 @@ packages:
     resolution: {integrity: sha512-dM0jVuXJPsDN6DvRpea484tCUaMiXWjuCn++HGTqUWzGDjv5tZkEZldAJ/UMlqRYGFrD/etByo4/xOuC/snX2A==}
     engines: {node: '>=20'}
 
-  prettier@3.8.4:
-    resolution: {integrity: sha512-N2MylSdi48+5N/6S5j+maeHbUSIzzZ5uOcX5Hm4QpV8Dkb1HFjfAKTKX6yNPJQD9AhcT3ifHNB66tWTTJDi11Q==}
+  prettier@3.9.10:
+    resolution: {integrity: sha512-skGHTH1Yb9QvaTC4hWnRTzEYtCpApF0UMBPz+t/0ZPzP8ihefo/btKd+QA7pUE0fEwA1SbS/NmhyEcstdXOIdA==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -7015,7 +7015,7 @@ snapshots:
       json5: 2.2.3
       lodash-es: 4.18.1
       obug: 3.0.0
-      prettier: 3.8.4
+      prettier: 3.9.10
       reselect: 5.3.0
       tsconfig-paths: 4.2.0
       valibot: 1.5.0(typescript@6.0.3)
@@ -9227,7 +9227,7 @@ snapshots:
 
   powershell-utils@0.1.0: {}
 
-  prettier@3.8.4: {}
+  prettier@3.9.10: {}
 
   pretty-format@27.5.1:
     dependencies:

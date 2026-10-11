@@ -167,7 +167,9 @@ describe("CropArea", () => {
           rect={rect}
           onChange={vi.fn<(rect: PixelRect) => void>()}
           focalPoint={{ x: 0.5, y: 0.5 }}
-          onFocalPointChange={vi.fn<(point: { x: number; y: number }) => void>()}
+          onFocalPointChange={vi.fn<
+            (point: { x: number; y: number }) => void
+          >()}
         />
       )
 

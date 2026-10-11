@@ -31,13 +31,7 @@ export type Dimensions = {
  * without a leading dot.
  */
 export type ImageFormat =
-  | "avif"
-  | "gif"
-  | "jpg"
-  | "png"
-  | "svg"
-  | "tiff"
-  | "webp"
+  "avif" | "gif" | "jpg" | "png" | "svg" | "tiff" | "webp"
 
 /**
  * An alias an author may write in place of a canonical {@link ImageFormat}.

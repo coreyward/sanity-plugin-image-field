@@ -22,12 +22,10 @@ vi.mock("sanity", async (importOriginal) => {
   }
 })
 
-const baseProps = (
-  overrides: {
-    schemaType: { name: string; type?: unknown; options?: unknown }
-    renderDefault?: (props: InputProps) => React.ReactNode
-  }
-): InputProps =>
+const baseProps = (overrides: {
+  schemaType: { name: string; type?: unknown; options?: unknown }
+  renderDefault?: (props: InputProps) => React.ReactNode
+}): InputProps =>
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   ({
     value: undefined,
