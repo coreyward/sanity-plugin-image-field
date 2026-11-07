@@ -32,7 +32,11 @@ import {
   useClient,
   useWorkspace,
 } from "sanity"
-import { dimensionsAtLeast, resolveAspectRatio } from "./cropMath"
+import {
+  describeDimensions,
+  dimensionsAtLeast,
+  resolveAspectRatio,
+} from "./cropMath"
 import { CropDialog } from "./CropDialog"
 import {
   croppedDimensionsFromValue,
@@ -179,7 +183,7 @@ export const ImageFieldInput = ({
     ) {
       setUpload({
         status: "error",
-        message: `That image is too small. It must be at least ${config.requiredDimensions.width} × ${config.requiredDimensions.height} px.`,
+        message: `That image is too small. It must be at least ${describeDimensions(config.requiredDimensions)}.`,
       })
       return
     }
@@ -703,7 +707,7 @@ const getDimensionIssue = (
   ) {
     return {
       tone: "critical",
-      message: `Cropped image is below the required ${requiredDimensions.width} × ${requiredDimensions.height} px. Edit the crop to enlarge it.`,
+      message: `Cropped image must be at least ${describeDimensions(requiredDimensions)}. Edit the crop to enlarge it.`,
     }
   }
   if (
@@ -712,7 +716,7 @@ const getDimensionIssue = (
   ) {
     return {
       tone: "caution",
-      message: `Cropped image is below the recommended ${recommendedDimensions.width} × ${recommendedDimensions.height} px.`,
+      message: `Cropped image should be at least ${describeDimensions(recommendedDimensions)}.`,
     }
   }
   return undefined

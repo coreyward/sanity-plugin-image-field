@@ -11,4 +11,5 @@ export type {
   ImageFormat,
   ImageFormatAlias,
   ImageFieldOptions,
+  MinimumDimensions,
 } from "./types"

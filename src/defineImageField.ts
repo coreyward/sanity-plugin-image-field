@@ -7,11 +7,12 @@ import {
 import { ImageFieldInput } from "./ImageFieldInput"
 import {
   describeAspectRatio,
+  describeDimensions,
   dimensionsAtLeast,
   ratioMatchesConstraint,
   resolveAspectRatio,
 } from "./cropMath"
-import { validateAspectRatio } from "./utils"
+import { validateAspectRatio, validateMinimumDimensions } from "./utils"
 import { croppedDimensionsFromValue } from "./imageUrl"
 import {
   assetRefMatchesAllowedFormats,
@@ -19,9 +20,9 @@ import {
   normalizeAllowedFormats,
 } from "./upload"
 import {
-  type Dimensions,
   type ImageFieldOptions,
   type ImageFormat,
+  type MinimumDimensions,
   type ResolvedImageFieldConfig,
 } from "./types"
 
@@ -106,6 +107,14 @@ export const defineImageField = ({
     validateAspectRatio(aspectRatio)
   }
 
+  if (recommendedDimensions !== undefined) {
+    validateMinimumDimensions("recommendedDimensions", recommendedDimensions)
+  }
+
+  if (requiredDimensions !== undefined) {
+    validateMinimumDimensions("requiredDimensions", requiredDimensions)
+  }
+
   const imageField: ImageFieldOptions = {
     allowedFormats: normalizedAllowedFormats,
     aspectRatio,
@@ -183,7 +192,7 @@ const validateImageFormat = (
  */
 const validateCroppedSize = (
   value: ImageValue | undefined,
-  threshold: Dimensions,
+  threshold: MinimumDimensions,
   level: "error" | "warning"
 ): true | string => {
   const dimensions = croppedDimensionsFromValue(value)
@@ -192,7 +201,7 @@ const validateCroppedSize = (
   }
   const verb = level === "warning" ? "should" : "must"
   const suffix = level === "warning" ? " for best results" : ""
-  return `Cropped image ${verb} be at least ${threshold.width} × ${threshold.height} px${suffix}`
+  return `Cropped image ${verb} be at least ${describeDimensions(threshold)}${suffix}`
 }
 
 /**

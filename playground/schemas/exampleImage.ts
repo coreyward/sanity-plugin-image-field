@@ -83,6 +83,13 @@ export const exampleImage = defineType({
       aspectRatio: 2 / 3,
     }),
 
+    // Only the width is checked, so any crop height is accepted.
+    defineImageField({
+      name: "minimumWidthImage",
+      title: "Minimum width image",
+      requiredDimensions: { width: 800 },
+    }),
+
     // A default image: no wrapper, no options.
     defineField({
       name: "defaultConfigImage",

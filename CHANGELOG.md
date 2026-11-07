@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.0 - 2026-11-07
+
+- `requiredDimensions` and `recommendedDimensions` now accept a single axis,
+  such as `{ width: 800 }`. An axis left out is not checked. The new
+  `MinimumDimensions` type is exported.
+- **Breaking:** `defineImageField` now throws when a dimension limit sets
+  neither axis, or sets an axis that is not a finite number greater than 0.
+  Replace a placeholder such as `height: 0` by leaving that axis out.
+- **Breaking (types):** `ImageFieldOptions.requiredDimensions` and
+  `recommendedDimensions` are typed as `MinimumDimensions`, so each axis may be
+  `undefined`. Code that reads these values must handle a missing axis.
+- Reworded the preview warnings for undersized crops to match the validation
+  messages.
+
 ## 0.1.0 - 2026-10-10
 
 - **Breaking:** the `@sanity/ui` peer dependency is now `^4.0.0`. Studios on

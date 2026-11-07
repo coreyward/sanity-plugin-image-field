@@ -4,6 +4,7 @@ import {
   type AspectRatio,
   type AspectRatioRange,
   type Dimensions,
+  type MinimumDimensions,
   type ResolvedImageFieldConfig,
 } from "./types"
 
@@ -382,12 +383,30 @@ export const croppedDimensions = (rect: PixelRect): Dimensions => ({
   height: Math.round(rect.height),
 })
 
-/** Whether dimensions clear a minimum on both axes. */
+/** Whether dimensions clear a minimum on every axis the minimum sets. */
 export const dimensionsAtLeast = (
   dimensions: Dimensions,
-  threshold: Dimensions
+  threshold: MinimumDimensions
 ) =>
-  dimensions.width >= threshold.width && dimensions.height >= threshold.height
+  dimensions.width >= (threshold.width ?? 0) &&
+  dimensions.height >= (threshold.height ?? 0)
+
+/**
+ * Format a minimum size for display: `800 × 450 px` with both axes, `800 px
+ * wide` with only a width, and `450 px tall` with only a height.
+ */
+export const describeDimensions = ({
+  width,
+  height,
+}: MinimumDimensions): string => {
+  if (width === undefined) {
+    return `${height} px tall`
+  }
+  if (height === undefined) {
+    return `${width} px wide`
+  }
+  return `${width} × ${height} px`
+}
 
 /**
  * Format an aspect ratio for display. Prefers a whole-number `w:h` label with a

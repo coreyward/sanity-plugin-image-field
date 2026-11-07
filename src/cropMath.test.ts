@@ -5,6 +5,7 @@ import {
   croppedDimensions,
   cropToPixelRect,
   defaultCrop,
+  describeDimensions,
   dimensionsAtLeast,
   type Direction,
   focalPointToHotspot,
@@ -468,6 +469,35 @@ describe("croppedDimensions / dimensionsAtLeast", () => {
         { width: 800, height: 600 }
       )
     ).toBe(false)
+  })
+
+  it("checks only the width when the threshold sets only a width", () => {
+    expect(dimensionsAtLeast({ width: 800, height: 1 }, { width: 800 })).toBe(
+      true
+    )
+    expect(
+      dimensionsAtLeast({ width: 799, height: 5000 }, { width: 800 })
+    ).toBe(false)
+  })
+
+  it("checks only the height when the threshold sets only a height", () => {
+    expect(dimensionsAtLeast({ width: 1, height: 600 }, { height: 600 })).toBe(
+      true
+    )
+    expect(
+      dimensionsAtLeast({ width: 5000, height: 599 }, { height: 600 })
+    ).toBe(false)
+  })
+})
+
+describe("describeDimensions", () => {
+  it("shows both axes when both are set", () => {
+    expect(describeDimensions({ width: 800, height: 450 })).toBe("800 × 450 px")
+  })
+
+  it("names the axis when only one is set", () => {
+    expect(describeDimensions({ width: 800 })).toBe("800 px wide")
+    expect(describeDimensions({ height: 450 })).toBe("450 px tall")
   })
 })
 

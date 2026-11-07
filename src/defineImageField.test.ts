@@ -116,6 +116,21 @@ describe("defineImageField", () => {
     ).toThrow("aspectRatio max must be greater than or equal to min.")
   })
 
+  it("throws for invalid dimension limits and names the option", () => {
+    expect(() =>
+      defineImageField({
+        name: "hero",
+        recommendedDimensions: { width: 800, height: 0 },
+      })
+    ).toThrow(
+      "recommendedDimensions.height must be a finite number greater than 0."
+    )
+    expect(() =>
+      // @ts-expect-error -- at least one axis is required
+      defineImageField({ name: "hero", requiredDimensions: {} })
+    ).toThrow("requiredDimensions must set width, height, or both.")
+  })
+
   it("throws for an empty aspect ratio array", () => {
     expect(() => defineImageField({ name: "hero", aspectRatio: [] })).toThrow(
       "aspectRatio must not be an empty array."
@@ -245,6 +260,28 @@ describe("defineImageField", () => {
       )
       expect(validate(imageValue(SMALL_RASTER_REF))).toBe(
         "Cropped image must be at least 800 × 450 px"
+      )
+    })
+
+    it("checks and describes only the width when no height is set", () => {
+      const validate = validatorAt(
+        { name: "hero", requiredDimensions: { width: 800 } },
+        0
+      )
+      expect(validate(imageValue(RASTER_REF))).toBe(true)
+      expect(validate(imageValue(SMALL_RASTER_REF))).toBe(
+        "Cropped image must be at least 800 px wide"
+      )
+    })
+
+    it("checks and describes only the height when no width is set", () => {
+      const validate = validatorAt(
+        { name: "hero", recommendedDimensions: { height: 450 } },
+        0
+      )
+      expect(validate(imageValue(RASTER_REF))).toBe(true)
+      expect(validate(imageValue(SMALL_RASTER_REF))).toBe(
+        "Cropped image should be at least 450 px tall for best results"
       )
     })
 

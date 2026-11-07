@@ -212,15 +212,23 @@ type ImageFieldOptions = {
    */
   aspectRatio?: number | { min: number; max: number } | number[]
 
+  // MinimumDimensions is exported by the plugin. It requires at least one axis:
+  // { width: number; height?: number } | { width?: number; height: number }
+
   /**
    * Shows a non-blocking warning when the crop is smaller than this size.
+   * Set width, height, or both. An axis left out is not checked.
    */
-  recommendedDimensions?: { width: number; height: number }
+  recommendedDimensions?: MinimumDimensions
 
   /**
    * Blocks confirmation when the crop is smaller than this size.
+   * Set width, height, or both. An axis left out is not checked.
+   *
+   * @example
+   * requiredDimensions: { width: 800 }
    */
-  requiredDimensions?: { width: number; height: number }
+  requiredDimensions?: MinimumDimensions
 
   /**
    * Allowed image file formats, as extensions (e.g., ["jpg", "png", "webp"]).

@@ -4,7 +4,7 @@ import { type ImageCrop, type ImageHotspot } from "sanity"
 import { CropDialog } from "./CropDialog"
 import { FREE_ASPECT_RATIO_RANGE } from "./cropMath"
 import { renderWithUi } from "./test/render"
-import { type ResolvedImageFieldConfig } from "./types"
+import { type MinimumDimensions, type ResolvedImageFieldConfig } from "./types"
 
 const source = { width: 1200, height: 800 }
 const imageSource = { projectId: "proj", dataset: "dataset" }
@@ -14,10 +14,9 @@ const config: ResolvedImageFieldConfig = {
 }
 
 /** A config that requires the given cropped size, on the free aspect range. */
-const withRequired = (requiredDimensions: {
-  width: number
-  height: number
-}): ResolvedImageFieldConfig => ({
+const withRequired = (
+  requiredDimensions: MinimumDimensions
+): ResolvedImageFieldConfig => ({
   aspectRatioRange: FREE_ASPECT_RATIO_RANGE,
   requiredDimensions,
 })
@@ -243,6 +242,40 @@ describe("CropDialog", () => {
       expect(
         screen.getByRole("button", { name: "Confirm crop" })
       ).toBeDisabled()
+    })
+
+    it("blocks confirm and names the axis when only a width is required", () => {
+      renderWithUi(
+        <CropDialog
+          assetRef={assetRef}
+          imageSource={imageSource}
+          sourceDimensions={source}
+          config={withRequired({ width: 5000 })}
+          onConfirm={() => {}}
+          onClose={() => {}}
+        />
+      )
+      expect(
+        screen.getByText("Crop must be at least 5000 px wide.")
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole("button", { name: "Confirm crop" })
+      ).toBeDisabled()
+    })
+
+    it("allows confirm when the crop clears a height-only requirement", () => {
+      renderWithUi(
+        <CropDialog
+          assetRef={assetRef}
+          imageSource={imageSource}
+          sourceDimensions={source}
+          config={withRequired({ height: 100 })}
+          onConfirm={() => {}}
+          onClose={() => {}}
+        />
+      )
+      expect(screen.getByText("Crop size looks good.")).toBeInTheDocument()
+      expect(screen.getByRole("button", { name: "Confirm crop" })).toBeEnabled()
     })
 
     it("reserves no status slot when the field sets no size limit", () => {

@@ -1,4 +1,8 @@
-import { type AspectRatio, type AspectRatioRange } from "./types"
+import {
+  type AspectRatio,
+  type AspectRatioRange,
+  type MinimumDimensions,
+} from "./types"
 
 /**
  * Validate an authored {@link AspectRatio}, throwing an error when the
@@ -34,6 +38,31 @@ export const validateAspectRatio = (input: AspectRatio): void => {
   }
   if (input.max < input.min) {
     throw new Error("aspectRatio max must be greater than or equal to min.")
+  }
+}
+
+/**
+ * Validate an authored {@link MinimumDimensions}, throwing an error when it is
+ * invalid. At least one axis must be set, and every axis that is set must be
+ * finite and positive. `name` is the option name used in the error message.
+ */
+export const validateMinimumDimensions = (
+  name: string,
+  { width, height }: MinimumDimensions
+): void => {
+  if (width === undefined && height === undefined) {
+    throw new Error(`${name} must set width, height, or both.`)
+  }
+  const axes = [
+    ["width", width],
+    ["height", height],
+  ] as const
+  for (const [axis, size] of axes) {
+    if (size !== undefined && (!Number.isFinite(size) || size <= 0)) {
+      throw new Error(
+        `${name}.${axis} must be a finite number greater than 0. Leave out an axis to skip checking it.`
+      )
+    }
   }
 }
 

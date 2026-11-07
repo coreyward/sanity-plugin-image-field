@@ -20,11 +20,18 @@ export type AspectRatioRange = {
  */
 export type AspectRatio = number | AspectRatioRange | number[]
 
-/** A pixel size. Used for both source images and crop thresholds. */
+/** A pixel size. Used for source images and crops. */
 export type Dimensions = {
   width: number
   height: number
 }
+
+/**
+ * A minimum pixel size for a crop. At least one axis must be set. An axis left
+ * out is not checked.
+ */
+export type MinimumDimensions =
+  { width: number; height?: number } | { width?: number; height: number }
 
 /**
  * A canonical image file format the field handles, as a lowercase extension
@@ -68,15 +75,17 @@ export type ImageFieldOptions = {
   aspectRatio?: AspectRatio
   /**
    * The editor shows a non-blocking warning when the cropped size falls below
-   * this. Set it to the size that looks best, not the hard minimum.
+   * this. Set it to the size that looks best, not the hard minimum. Set only
+   * `width` or `height` to check one axis.
    */
-  recommendedDimensions?: Dimensions
+  recommendedDimensions?: MinimumDimensions
   /**
    * The crop cannot be confirmed when the cropped size falls below this. Fields
    * built with {@link defineImageField} also fail document validation. Set it to
-   * the smallest acceptable size.
+   * the smallest acceptable size. Set only `width` or `height` to check one
+   * axis.
    */
-  requiredDimensions?: Dimensions
+  requiredDimensions?: MinimumDimensions
 }
 
 /**
@@ -90,8 +99,8 @@ export type ResolvedImageFieldConfig = {
    * an array of ratios. Absent means continuous (free or range) behavior.
    */
   snapRatios?: number[]
-  recommendedDimensions?: Dimensions
-  requiredDimensions?: Dimensions
+  recommendedDimensions?: MinimumDimensions
+  requiredDimensions?: MinimumDimensions
 }
 
 /**

@@ -11,6 +11,7 @@ import {
   cropToPixelRect,
   defaultCrop,
   describeAspectRatio,
+  describeDimensions,
   dimensionsAtLeast,
   focalPointToHotspot,
   hotspotToFocalPoint,
@@ -21,7 +22,11 @@ import {
 import { nearestRatio } from "./utils"
 import { CropArea } from "./CropArea"
 import { type SanityImageSource, sourceImageUrl } from "./imageUrl"
-import { type Dimensions, type ResolvedImageFieldConfig } from "./types"
+import {
+  type Dimensions,
+  type MinimumDimensions,
+  type ResolvedImageFieldConfig,
+} from "./types"
 
 type CropDialogProps = {
   assetRef: string
@@ -232,8 +237,8 @@ const CropStatusMessage = ({
   belowRecommended,
 }: {
   config: ResolvedImageFieldConfig
-  requiredDimensions?: Dimensions
-  recommendedDimensions?: Dimensions
+  requiredDimensions?: MinimumDimensions
+  recommendedDimensions?: MinimumDimensions
   ratioMismatch?: boolean
   belowRequired?: boolean
   belowRecommended?: boolean
@@ -279,6 +284,3 @@ const CropStatusMessage = ({
   }
   return null
 }
-
-const describeDimensions = (dimensions: Dimensions) =>
-  `${dimensions.width} × ${dimensions.height} px`

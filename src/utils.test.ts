@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest"
-import { clampRatio, nearestRatio, validateAspectRatio } from "./utils"
+import {
+  clampRatio,
+  nearestRatio,
+  validateAspectRatio,
+  validateMinimumDimensions,
+} from "./utils"
 import { type AspectRatioRange } from "./types"
 
 const RANGE: AspectRatioRange = { min: 4 / 3, max: 16 / 9 }
@@ -69,6 +74,51 @@ describe("validateAspectRatio", () => {
         "aspectRatio max must be greater than or equal to min."
       )
     })
+  })
+})
+
+describe("validateMinimumDimensions", () => {
+  it("accepts one axis or both", () => {
+    expect(() =>
+      validateMinimumDimensions("requiredDimensions", { width: 800 })
+    ).not.toThrow()
+    expect(() =>
+      validateMinimumDimensions("requiredDimensions", { height: 450 })
+    ).not.toThrow()
+    expect(() =>
+      validateMinimumDimensions("requiredDimensions", {
+        width: 800,
+        height: 450,
+      })
+    ).not.toThrow()
+  })
+
+  it("rejects a value with neither axis", () => {
+    expect(() =>
+      // @ts-expect-error -- at least one axis is required
+      validateMinimumDimensions("requiredDimensions", {})
+    ).toThrow("requiredDimensions must set width, height, or both.")
+  })
+
+  it("rejects a non-finite or non-positive axis and names it", () => {
+    expect(() =>
+      validateMinimumDimensions("requiredDimensions", { width: 0 })
+    ).toThrow(
+      "requiredDimensions.width must be a finite number greater than 0. Leave out an axis to skip checking it."
+    )
+    expect(() =>
+      validateMinimumDimensions("requiredDimensions", { height: -1 })
+    ).toThrow(
+      "requiredDimensions.height must be a finite number greater than 0."
+    )
+    expect(() =>
+      validateMinimumDimensions("requiredDimensions", {
+        width: 800,
+        height: Infinity,
+      })
+    ).toThrow(
+      "requiredDimensions.height must be a finite number greater than 0."
+    )
   })
 })
 

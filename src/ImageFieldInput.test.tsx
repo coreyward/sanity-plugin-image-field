@@ -526,7 +526,27 @@ describe("ImageFieldInput dimension messaging in the confirmed preview", () => {
 
     expect(
       screen.getByText(
-        "Cropped image is below the required 5000 × 5000 px. Edit the crop to enlarge it."
+        "Cropped image must be at least 5000 × 5000 px. Edit the crop to enlarge it."
+      )
+    ).toBeInTheDocument()
+  })
+
+  it("names the axis when only a width is required", () => {
+    renderWithUi(
+      <ImageFieldInput
+        {...baseProps({
+          value: rasterValue(),
+          schemaType: {
+            name: "image",
+            options: { imageField: { requiredDimensions: { width: 5000 } } },
+          },
+        })}
+      />
+    )
+
+    expect(
+      screen.getByText(
+        "Cropped image must be at least 5000 px wide. Edit the crop to enlarge it."
       )
     ).toBeInTheDocument()
   })
@@ -549,7 +569,7 @@ describe("ImageFieldInput dimension messaging in the confirmed preview", () => {
     )
 
     expect(
-      screen.getByText("Cropped image is below the recommended 5000 × 5000 px.")
+      screen.getByText("Cropped image should be at least 5000 × 5000 px.")
     ).toBeInTheDocument()
   })
 
